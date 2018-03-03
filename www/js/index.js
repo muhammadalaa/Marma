@@ -93,30 +93,30 @@ var app = {
         app.receivedEvent('deviceready');
         console.log('calling setup push');
         app.setupPush();
-		
+
     },
     setupPush: function () {
-		FCMPlugin.onTokenRefresh(function(token){
-    alert( token );
-});
-		FCMPlugin.getToken(function(token){
-    alert(token);
-});
-//Here you define your application behaviour based on the notification data.
-FCMPlugin.onNotification(function(data){
-    if(data.wasTapped){
-      //Notification was received on device tray and tapped by the user.
-      alert( JSON.stringify(data) );
-    }else{
-      //Notification was received in foreground. Maybe the user needs to be notified.
-      alert( JSON.stringify(data) );
+        FCMPlugin.onTokenRefresh(function (token) {
+            alert(token);
+        });
+        FCMPlugin.getToken(function (token) {
+            alert(token);
+        });
+        //Here you define your application behaviour based on the notification data.
+        FCMPlugin.onNotification(function (data) {
+            if (data.wasTapped) {
+                //Notification was received on device tray and tapped by the user.
+                alert(JSON.stringify(data));
+            } else {
+                //Notification was received in foreground. Maybe the user needs to be notified.
+                alert(JSON.stringify(data));
+            }
+        });
+
     }
-});
-        
-    },
     // Update DOM on a Received Event
-    ,receivedEvent: function (id) {
-        
+    , receivedEvent: function (id) {
+
         sessionStorage.clear();
     }
 };
@@ -189,7 +189,7 @@ regbtn.click(function () {
     return false;
 });
 reservebtn.click(function () {
-    
+
     if (sessionStorage.getItem("userid") != 'undefined') {
         if (reservedate.val()) {
             if (reservetime.val()) {
@@ -324,7 +324,7 @@ choosemandoob.click(function () {
         loadingdiv.show();
         var dt = reservedate.val();
         var tm = reservetime.val();
-        
+
         $.ajax({
             type: 'POST',
             url: 'http://clup.alatheertech.com/Api/AddOred',
@@ -736,7 +736,7 @@ changepasswordlnk.click(function () {
 });
 manadeebofferstablnk.click(function () {
     showManadeebOffers();
-    
+
 
 });
 
