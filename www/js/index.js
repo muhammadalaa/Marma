@@ -92,7 +92,7 @@ var app = {
     onDeviceReady: function () {
         app.receivedEvent('deviceready');
         console.log('calling setup push');
-        app.setupPush();
+        //app.setupPush();
     }/*,
     setupPush: function () {
         console.log('calling push init');
@@ -143,7 +143,7 @@ var app = {
         });
     },*/
     // Update DOM on a Received Event
-    receivedEvent: function (id) {
+    ,receivedEvent: function (id) {
         
         sessionStorage.clear();
     }

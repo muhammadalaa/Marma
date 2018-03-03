@@ -92,13 +92,13 @@ var app = {
     onDeviceReady: function () {
         app.receivedEvent('deviceready');
         console.log('calling setup push');
-        app.setupPush();
-    },
+        //app.setupPush();
+    }/*,
     setupPush: function () {
         console.log('calling push init');
         var push = PushNotification.init({
             "android": {
-                "senderID": "XXXXXXXX"
+                "senderID": "961089087180"
             },
             "browser": {},
             "ios": {
@@ -141,9 +141,9 @@ var app = {
                 'Ok'                  // buttonName
             );
         });
-    },
+    },*/
     // Update DOM on a Received Event
-    receivedEvent: function (id) {
+    ,receivedEvent: function (id) {
         
         sessionStorage.clear();
     }
