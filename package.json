@@ -1,0 +1,17 @@
+{
+  "name": "com.alatheertech.marma",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "displayName": "Marma",
+  "dependencies": {
+    "cordova-plugin-fcm": "^2.1.2",
+    "phonegap-plugin-push": "^2.1.1"
+  },
+  "cordova": {
+    "plugins": {
+      "phonegap-plugin-push": {}
+    }
+  }
+}
