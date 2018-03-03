@@ -93,12 +93,12 @@ var app = {
         app.receivedEvent('deviceready');
         console.log('calling setup push');
         app.setupPush();
-    },
+    }/*,
     setupPush: function () {
         console.log('calling push init');
         var push = PushNotification.init({
             "android": {
-                "senderID": "XXXXXXXX"
+                "senderID": "961089087180"
             },
             "browser": {},
             "ios": {
@@ -141,7 +141,7 @@ var app = {
                 'Ok'                  // buttonName
             );
         });
-    },
+    },*/
     // Update DOM on a Received Event
     receivedEvent: function (id) {
         
