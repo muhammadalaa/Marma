@@ -96,6 +96,7 @@ var app = {
 
     },
     setupPush: function () {
+
         FCMPlugin.onTokenRefresh(function (token) {
             alert(token);
         });
@@ -112,7 +113,6 @@ var app = {
                 alert(JSON.stringify(data));
             }
         });
-
     }
     // Update DOM on a Received Event
     , receivedEvent: function (id) {
