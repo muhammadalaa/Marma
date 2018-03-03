@@ -92,56 +92,28 @@ var app = {
     onDeviceReady: function () {
         app.receivedEvent('deviceready');
         console.log('calling setup push');
-        //app.setupPush();
-    }/*,
+        app.setupPush();
+		
+    },
     setupPush: function () {
-        console.log('calling push init');
-        var push = PushNotification.init({
-            "android": {
-                "senderID": "961089087180"
-            },
-            "browser": {},
-            "ios": {
-                "sound": true,
-                "vibration": true,
-                "badge": true
-            },
-            "windows": {}
-        });
-        console.log('after init');
-
-        push.on('registration', function (data) {
-            console.log('registration event: ' + data.registrationId);
-
-            var oldRegId = localStorage.getItem('registrationId');
-            if (oldRegId !== data.registrationId) {
-                // Save new registration ID
-                localStorage.setItem('registrationId', data.registrationId);
-                // Post registrationId to your app server as the value has changed
-            }
-
-            //var parentElement = document.getElementById('registration');
-            //var listeningElement = parentElement.querySelector('.waiting');
-            //var receivedElement = parentElement.querySelector('.received');
-
-            //listeningElement.setAttribute('style', 'display:none;');
-            //receivedElement.setAttribute('style', 'display:block;');
-        });
-
-        push.on('error', function (e) {
-            console.log("push error = " + e.message);
-        });
-
-        push.on('notification', function (data) {
-            console.log('notification event');
-            navigator.notification.alert(
-                data.message,         // message
-                null,                 // callback
-                data.title,           // title
-                'Ok'                  // buttonName
-            );
-        });
-    },*/
+		FCMPlugin.onTokenRefresh(function(token){
+    alert( token );
+});
+		FCMPlugin.getToken(function(token){
+    alert(token);
+});
+//Here you define your application behaviour based on the notification data.
+FCMPlugin.onNotification(function(data){
+    if(data.wasTapped){
+      //Notification was received on device tray and tapped by the user.
+      alert( JSON.stringify(data) );
+    }else{
+      //Notification was received in foreground. Maybe the user needs to be notified.
+      alert( JSON.stringify(data) );
+    }
+});
+        
+    },
     // Update DOM on a Received Event
     ,receivedEvent: function (id) {
         
