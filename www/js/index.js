@@ -113,7 +113,7 @@ var app = {
 
         push.on('registration', function(data) {
             console.log('registration event: ' + data.registrationId);
-
+alert('regId:'+  data.registrationId);
             var oldRegId = localStorage.getItem('registrationId');
             if (oldRegId !== data.registrationId) {
                 // Save new registration ID
@@ -135,6 +135,7 @@ var app = {
 
         push.on('notification', function(data) {
             console.log('notification event');
+			alert('notification:'+  data.message);
             navigator.notification.alert(
                 data.message,         // message
                 null,                 // callback
