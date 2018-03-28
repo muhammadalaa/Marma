@@ -16,7 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+var lat = 27.5162591;
+var lng = 41.7342923;
+
 var pglist = [];
+var url = 'http://marma.co/';
 var regbtn = $('#regbtn');
 var loginbtn = $('#loginbtn');
 var skipbtn = $('#skipbtn');
@@ -46,6 +51,7 @@ var playgroundsdiv = $('#playgroundsdiv');
 var playgrounddetailsdiv = $('#playgrounddetailsdiv');
 var playgroundpicturesdiv = $('#playgroundpicturesdiv');
 var playgroundpicsdiv = $('#playgroundpicsdiv');
+var bemandoobDiv = $('#bemandoobDiv');
 var loadingdiv = $('#loadingdiv');
 var reservedate = $('#reservedate');
 var pgpricespan = $('#pgpricespan');
@@ -57,6 +63,7 @@ var pgimg = $('#pgimg');
 var pgpicture = $('#pgpicture');
 var pgmaplink = $('#pgmaplink');
 var mandoobselectdiv = $('#mandoobselectdiv');
+var addPlaygrounddiv = $('#addPlaygrounddiv');
 var manadeebdiv = $('#manadeebdiv');
 var choosemandoobbackbtn = $('#choosemandoobbackbtn');
 var choosemandoob = $('#choosemandoob');
@@ -71,6 +78,38 @@ var prphonetb = $('#prphonetb');
 var changepasswordlnk = $('#changepasswordlnk');
 var manadeebofferstablnk = $('#manadeebofferstablnk');
 var manadeeborders = $('#manadeeborders');
+var mmbrshipselect = $('#mmbrshipselect');
+var bemandoob = $('#bemandoob');
+var addplayground = $('#addplayground');
+var titleimgcen = $('#titleimgcen');
+var searchpgbox = $('#searchpgbox');
+var playgroundstablnk = $('#playgroundstablnk');
+var addplaygroundtablnk = $('#addplaygroundtablnk');
+var personalimg = $('#personalimg');
+var licenseimg = $('#licenseimg');
+var personalimghdn = $('#personalimghdn');
+var licenseimghdn = $('#licenseimghdn');
+var addPlaygroundbtn = $('#addPlaygroundbtn');
+var pgnametb = $('#pgnametb');
+var pgpricetb = $('#pgpricetb');
+var pgcapacityselect = $('#pgcapacityselect');
+var pgaddressta = $('#pgaddressta');
+var joinreasontb = $('#joinreasontb');
+var pgphonetb = $('#pgphonetb');
+var bemandoobbtn = $('#bemandoobbtn');
+var cancelbemandoob = $('#cancelbemandoob');
+var changepersonalimglnk = $('#changepersonalimglnk');
+var changelicenseimglnk = $('#changelicenseimglnk');
+var choosepgaddimglnk = $('#choosepgaddimglnk');
+var pgaddimgspreviewdiv = $('#pgaddimgspreviewdiv');
+var pgaddimghdn1 = $('#pgaddimghdn1');
+var pgaddimghdn2 = $('#pgaddimghdn2');
+var pgaddimghdn3 = $('#pgaddimghdn3');
+var pgaddimghdn4 = $('#pgaddimghdn4');
+var pgaddimghdn5 = $('#pgaddimghdn5');
+var canceladdpg = $('#canceladdpg');
+var playground_google_lathdn = $('#playground_google_lathdn');
+var playground_google_lnghdn = $('#playground_google_lnghdn');
 var playground_id_pk;
 var mandoobordersLst;
 var app = {
@@ -95,13 +134,11 @@ var app = {
         app.setupPush();
 
     },
-    setupPush: function() {
+    setupPush: function () {
         console.log('calling push init');
         var push = PushNotification.init({
             "android": {},
-            "browser": {
-				pushServiceURL: 'http://push.api.phonegap.com/v1/push'
-			},
+            "browser": {},
             "ios": {
                 "sound": true,
                 "vibration": true,
@@ -111,9 +148,9 @@ var app = {
         });
         console.log('after init');
 
-        push.on('registration', function(data) {
+        push.on('registration', function (data) {
             console.log('registration event: ' + data.registrationId);
-alert('regId:'+  data.registrationId);
+            //alert('regId:'+  data.registrationId);
             var oldRegId = localStorage.getItem('registrationId');
             if (oldRegId !== data.registrationId) {
                 // Save new registration ID
@@ -129,20 +166,20 @@ alert('regId:'+  data.registrationId);
             receivedElement.setAttribute('style', 'display:block;');*/
         });
 
-        push.on('error', function(e) {
+        push.on('error', function (e) {
             console.log("push error = " + e.message);
         });
 
-        push.on('notification', function(data) {
+        push.on('notification', function (data) {
             console.log('notification event');
-			alert('notification:'+  data.message);
+            alert('notification:' + data.message);
             navigator.notification.alert(
                 data.message,         // message
                 null,                 // callback
                 data.title,           // title
                 'Ok'                  // buttonName
             );
-       });
+        });
     }
     // Update DOM on a Received Event
     , receivedEvent: function (id) {
@@ -169,17 +206,17 @@ function displayPlaygroundDetails(id) {
     reservedate.min = today;
     reservedate.val(today);
     playground_id_pk = id;
-    loadingdiv.show();
+    SetLoading(true);
     $.ajax({
         type: 'Get',
-        url: 'http://clup.alatheertech.com/Api/StadiumDetails/' + id,
+        url: url + 'Api/StadiumDetails/' + id,
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
         async: true,
         data: {},
         success: function (data) {
             //ProgressIndicator.hide();
-            loadingdiv.hide();
+            SetLoading(false);
             if (data && data.length > 0) {
                 pgpricespan.text(data[0].playground_cost);
                 pgnamespan.text(data[0].playground_name);
@@ -197,9 +234,9 @@ function displayPlaygroundDetails(id) {
             }
         }, error: function (a, e, d) {
             //ProgressIndicator.hide();
-            loadingdiv.hide();
+            SetLoading(false);
             var err = a.responseText + ' ' + e + ' ' + d;
-            alert(err);
+            navigator.notification.alert(err, null, 'خطأ', 'موافق');
         }
     });
 
@@ -210,7 +247,7 @@ skipbtn2.click(skiploginregister);
 skipbtn3.click(skiploginregister);
 
 regbtn.click(function () {
-    indexdiv.hide();
+    logindiv.hide();
     rusernametb.val('');
     rpasswordtb.val('');
     remailtb.val('');
@@ -237,14 +274,14 @@ reservebtn.click(function () {
                 if (dt == today) {
                     $.ajax({
                         type: 'POST',
-                        url: 'http://clup.alatheertech.com/Api/AddOrederAdmin',
+                        url: url + 'Api/AddOrederAdmin',
                         contentType: 'application/x-www-form-urlencoded; charset=utf-8',
                         dataType: 'json',
                         async: true,
                         data: { 'playground_id': playground_id_pk, 'date_reservation': dt, 'time_reservation': tm, 'user_id': sessionStorage.getItem("userid") },
                         success: function (data) {
                             //ProgressIndicator.hide();
-                            loadingdiv.hide();
+                            SetLoading(false);
                             if (data && data.success == 1) {
                                 if (data.time == 1) {
                                     navigator.notification.alert('تم حجز الملعب', null, 'تم', 'موافق');
@@ -256,25 +293,25 @@ reservebtn.click(function () {
                             }
                         }, error: function (a, e, d) {
                             //ProgressIndicator.hide();
-                            loadingdiv.hide();
+                            SetLoading(false);
                             var err = a.responseText + ' ' + e + ' ' + d;
-                            alert(err);
+                            navigator.notification.alert(err, null, 'خطأ', 'موافق');
                         }
                     });
                 } else {
                     playgrounddetailsdiv.hide();
 
-                    loadingdiv.show();
+                    SetLoading(true);
                     $.ajax({
                         type: 'Get',
-                        url: 'http://clup.alatheertech.com/Api/AllDelegate',
+                        url: url + 'Api/AllDelegate',
                         contentType: 'application/json; charset=utf-8',
                         dataType: 'json',
                         async: true,
                         data: {},
                         success: function (data) {
                             //ProgressIndicator.hide();
-                            loadingdiv.hide();
+                            SetLoading(false);
                             if (data && data.length > 0) {
                                 var ht = '';
                                 for (var i = 0; i < data.length; i++) {
@@ -289,9 +326,9 @@ reservebtn.click(function () {
                         }, error: function (a, e, d) {
                             //ProgressIndicator.hide();
                             playgrounddetailsdiv.show();
-                            loadingdiv.hide();
+                            SetLoading(false);
                             var err = a.responseText + ' ' + e + ' ' + d;
-                            alert(err);
+                            navigator.notification.alert(err, null, 'خطأ', 'موافق');
                         }
                     });
 
@@ -311,17 +348,17 @@ reservebtn.click(function () {
 
 pgalbumlnk.click(function () {
     playgrounddetailsdiv.hide();
-    loadingdiv.show();
+    SetLoading(true);
     $.ajax({
         type: 'Get',
-        url: 'http://clup.alatheertech.com/Api/StadiumImages/' + playground_id_pk,
+        url: url + 'Api/StadiumImages/' + playground_id_pk,
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
         async: true,
         data: {},
         success: function (data) {
             //ProgressIndicator.hide();
-            loadingdiv.hide();
+            SetLoading(false);
             if (data && data.length > 0) {
                 var ht = '';
                 for (var i = 0; i < data.length; i++) {
@@ -337,9 +374,9 @@ pgalbumlnk.click(function () {
         }, error: function (a, e, d) {
             //ProgressIndicator.hide();
             playgrounddetailsdiv.show();
-            loadingdiv.hide();
+            SetLoading(false);
             var err = a.responseText + ' ' + e + ' ' + d;
-            alert(err);
+            navigator.notification.alert(err, null, 'خطأ', 'موافق');
         }
     });
     return false;
@@ -351,20 +388,20 @@ choosemandoob.click(function () {
         var delegates = $('.mandoobchbx:checked').map(function () {
             return $(this).val();
         }).get();
-        loadingdiv.show();
+        SetLoading(true);
         var dt = reservedate.val();
         var tm = reservetime.val();
 
         $.ajax({
             type: 'POST',
-            url: 'http://clup.alatheertech.com/Api/AddOred',
+            url: url + 'Api/AddOred',
             contentType: 'application/x-www-form-urlencoded; charset=utf-8',
             dataType: 'json',
             async: true,
             data: { 'playground_id': playground_id_pk, 'date_reservation': dt, 'time_reservation': tm, 'user_id': sessionStorage.getItem("userid"), 'delegates': delegates },
             success: function (data) {
                 //ProgressIndicator.hide();
-                loadingdiv.hide();
+                SetLoading(false);
                 if (data && data.success == 1) {
                     if (data.time == 1) {
                         navigator.notification.alert('تم حجز الملعب', null, 'تم', 'موافق');
@@ -378,9 +415,9 @@ choosemandoob.click(function () {
                 }
             }, error: function (a, e, d) {
                 //ProgressIndicator.hide();
-                loadingdiv.hide();
+                SetLoading(false);
                 var err = a.responseText + ' ' + e + ' ' + d;
-                alert(err);
+                navigator.notification.alert(err, null, 'خطأ', 'موافق');
             }
         });
     } else {
@@ -390,7 +427,7 @@ choosemandoob.click(function () {
 });
 
 loginbtn.click(function () {
-    indexdiv.hide();
+    registerdiv.hide();
     usernametb.val('');
     passwordtb.val('');
     logindiv.show();
@@ -400,18 +437,18 @@ userloginbtn.click(function () {
     if (usernametb.val()) {
         if (passwordtb.val()) {
             //ProgressIndicator.showSimple(true);
-            loadingdiv.show();
+            SetLoading(true);
             sessionStorage.clear();
             $.ajax({
                 type: 'POST',
-                url: 'http://clup.alatheertech.com/Api/Login',
+                url: url + 'Api/Login',
                 contentType: 'application/x-www-form-urlencoded; charset=utf-8',
                 dataType: 'json',
                 async: true,
                 data: { 'user_name': usernametb.val(), 'password': passwordtb.val() },
                 success: function (data) {
                     //ProgressIndicator.hide();
-                    loadingdiv.hide();
+                    SetLoading(false);
                     if (data.success == 1) {
                         sessionStorage.setItem("user_name", usernametb.val());
                         sessionStorage.setItem("userid", data.id);
@@ -427,9 +464,9 @@ userloginbtn.click(function () {
                     }
                 }, error: function (a, e, d) {
                     //ProgressIndicator.hide();
-                    loadingdiv.hide();
+                    SetLoading(false);
                     var err = a.responseText + ' ' + e + ' ' + d;
-                    alert(err);
+                    navigator.notification.alert(err, null, 'خطأ', 'موافق');
                 }
             });
 
@@ -448,17 +485,17 @@ userregisterbtn.click(function () {
     if (rusernametb.val()) {
         if (rpasswordtb.val()) {
             //ProgressIndicator.showSimple(true);
-            loadingdiv.show();
+            SetLoading(true);
             $.ajax({
                 type: 'POST',
-                url: 'http://clup.alatheertech.com/Api/InsertRegistration',
+                url: url + 'Api/InsertRegistration',
                 contentType: 'application/x-www-form-urlencoded; charset=utf-8',
                 dataType: 'json',
                 async: true,
-                data: { 'user_name': rusernametb.val(), 'password': rpasswordtb.val(), 'email': remailtb.val(), 'mobile': rphonetb.val() },
+                data: { 'user_name': rusernametb.val(), 'password': rpasswordtb.val(), 'email': remailtb.val(), 'mobile': rphonetb.val(), 'id_member': mmbrshipselect.val() },
                 success: function (data) {
                     //ProgressIndicator.hide();
-                    loadingdiv.hide();
+                    SetLoading(false);
                     if (data.success == 1) {
                         navigator.notification.alert('تم تسجيل حسابك بنجاح', null, 'تم', 'موافق');
                         sessionStorage.setItem("user_name", rusernametb.val());
@@ -470,9 +507,9 @@ userregisterbtn.click(function () {
                     }
                 }, error: function (a, e, d) {
                     //ProgressIndicator.hide();
-                    loadingdiv.hide();
+                    SetLoading(false);
                     var err = a.responseText + ' ' + e + ' ' + d;
-                    alert(err);
+                    navigator.notification.alert(err, null, 'خطأ', 'موافق');
                 }
             });
 
@@ -488,7 +525,7 @@ userregisterbtn.click(function () {
 });
 playgroundsbackbtn.click(function () {
     playgroundsdiv.hide();
-    indexdiv.show();
+    logindiv.show();
     return false;
 });
 backtolistbackbtn.click(function () {
@@ -507,33 +544,30 @@ choosemandoobbackbtn.click(function () {
     return false;
 });
 
-function ShowPlaygrounds() {
+function ShowPlaygrounds(txtval) {
     //$('#playgroundslistdiv').html('<span>loading ...</span>');
-    if (pglist && pglist.length > 0) {
-        playgroundsdiv.show();
-    } else {
-
-        loadingdiv.show();
+    if (txtval) {
+        SetLoading(true);
         $.ajax({
-            type: 'Get',
-            url: 'http://clup.alatheertech.com/Api/AllStadium',
-            contentType: 'application/json; charset=utf-8',
+            type: 'POST',
+            url: url + 'Api/SearchPlayground',
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
             dataType: 'json',
             async: true,
-            data: { 'user_name': rusernametb.val(), 'password': rpasswordtb.val(), 'email': remailtb.val(), 'mobile': rphonetb.val() },
+            data: { 'search_playground_name': txtval },
             success: function (data) {
                 //ProgressIndicator.hide();
-                loadingdiv.hide();
+                SetLoading(false);
                 if (data) {
                     pglist = data;
                     var ht = '';
                     for (var i = 0; i < data.length; i++) {
                         if (i == 0)
                         { ht += '<div  class="row pgrow">'; }
-                        ht += '<div class="pgitem col-xs-3 col-sm-3 col-lg-3"><a href="#" onclick="return displayPlaygroundDetails(' + data[i].playground_id_pk + ')"><div class="col-xs-12 col-sm-4 col-md-3 col-lg-3"><span>' + data[i].playground_name + '</span></div></a></div>';
-                        if ((i + 1) % 4 == 0 && i <= data.length - 1) {
-                            ht += '</div><div  class="row pgrow">';
-                        }
+                        ht += '<div class="pgitem col-xs-12 col-sm-12 col-lg-12"><a href="#" onclick="return displayPlaygroundDetails(' + data[i].playground_id_pk + ')"><div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><img src="' + data[i].image_name + '" style="width:100%" /><span>' + data[i].playground_name + '</span></div></a></div>';
+                        //if ((i + 1) % 4 == 0 && i <= data.length - 1) {
+                        //    ht += '</div><div  class="row pgrow">';
+                        //}
                         if (i == data.length - 1) {
                             ht += '</div>';
                         }
@@ -545,28 +579,66 @@ function ShowPlaygrounds() {
                 }
             }, error: function (a, e, d) {
                 //ProgressIndicator.hide();
-                loadingdiv.hide();
+                SetLoading(false);
                 var err = a.responseText + ' ' + e + ' ' + d;
-                alert(err);
+                navigator.notification.alert(err, null, 'خطأ', 'موافق');
+            }
+        });
+    } else {
+        playgroundstablnk.click();
+
+        SetLoading(true);
+        $.ajax({
+            type: 'Get',
+            url: url + 'Api/AllStadium',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            async: true,
+            data: { 'user_name': rusernametb.val(), 'password': rpasswordtb.val(), 'email': remailtb.val(), 'mobile': rphonetb.val() },
+            success: function (data) {
+                //ProgressIndicator.hide();
+                SetLoading(false);
+                if (data) {
+                    pglist = data;
+                    var ht = '';
+                    for (var i = 0; i < data.length; i++) {
+                        if (i == 0)
+                        { ht += '<div  class="row pgrow">'; }
+                        ht += '<div class="pgitem col-xs-12 col-sm-12 col-lg-12"><a href="#" onclick="return displayPlaygroundDetails(' + data[i].playground_id_pk + ')"><div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><img src="' + data[i].image_name + '" style="width:100%" /><span>' + data[i].playground_name + '</span></div></a></div>';
+                        //if ((i + 1) % 4 == 0 && i <= data.length - 1) {
+                        //    ht += '</div><div  class="row pgrow">';
+                        //}
+                        if (i == data.length - 1) {
+                            ht += '</div>';
+                        }
+                    }
+                    $('#playgroundslistdiv').html(ht);
+                    playgroundsdiv.show();
+                } else {
+                    navigator.notification.alert('عذرا ولكن تعذر تحميل بيانات الملاعب!', null, 'خطأ', 'موافق');
+                }
+            }, error: function (a, e, d) {
+                //ProgressIndicator.hide();
+                SetLoading(false);
+                var err = a.responseText + ' ' + e + ' ' + d;
+                navigator.notification.alert(err, null, 'خطأ', 'موافق');
             }
         });
     }
-
-
 }
 
 function ShowMandoobPage() {
-    loadingdiv.show();
+    SetLoading(true);
     $.ajax({
         type: 'Get',
-        url: 'http://clup.alatheertech.com/Api/OneDelegateOrder/' + sessionStorage.getItem("userid"),
+        url: url + 'Api/OneDelegateOrder/' + sessionStorage.getItem("userid"),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
         async: true,
         data: {},
         success: function (data) {
             //ProgressIndicator.hide();
-            loadingdiv.hide();
+            SetLoading(false);
             if (data && data.length > 0) {
                 mandoobordersLst = data;
                 var ht = '';
@@ -594,9 +666,9 @@ function ShowMandoobPage() {
             usernametb.val('');
             passwordtb.val('');
             logindiv.show();
-            loadingdiv.hide();
+            SetLoading(false);
             var err = a.responseText + ' ' + e + ' ' + d;
-            alert(err);
+            navigator.notification.alert(err, null, 'خطأ', 'موافق');
         }
     });
 
@@ -616,17 +688,17 @@ function ShowMandoobOrderDetails(id) {
 function onPromptMandoobOrder(results) {
     if (results.buttonIndex == 1) {
         var enteredVal = results.input1;
-        loadingdiv.show();
+        SetLoading(true);
         $.ajax({
             type: 'POST',
-            url: 'http://clup.alatheertech.com/Api/OrderCost',
+            url: url + 'Api/OrderCost',
             contentType: 'application/x-www-form-urlencoded; charset=utf-8',
             dataType: 'json',
             async: true,
             data: { 'playground_cost': enteredVal, 'id': order_id },
             success: function (data) {
                 //ProgressIndicator.hide();
-                loadingdiv.hide();
+                SetLoading(false);
                 if (data.success == 1) {
                     navigator.notification.alert('تم اضافة عرض السعر بنجاح', null, 'تم', 'موافق');
                     ShowMandoobPage();
@@ -635,26 +707,38 @@ function onPromptMandoobOrder(results) {
                 }
             }, error: function (a, e, d) {
                 //ProgressIndicator.hide();
-                loadingdiv.hide();
+                SetLoading(false);
                 var err = a.responseText + ' ' + e + ' ' + d;
-                alert(err);
+                navigator.notification.alert(err, null, 'خطأ', 'موافق');
             }
         });
     }
 }
-
+playgroundstablnk.click(function () {
+    searchpgbox.show();
+    titleimgcen.attr('src', 'img/pglist.png');
+});
+addplaygroundtablnk.click(function () {
+    searchpgbox.hide();
+    titleimgcen.attr('src', 'img/addpg.png');
+    bemandoobDiv.hide();
+    $('.addactionbtns').show(); bemandoobDiv.hide(); addPlaygrounddiv.hide();
+});
 userprofiletablnk.click(function () {
-    loadingdiv.show();
+    searchpgbox.hide();
+    titleimgcen.attr('src', 'img/profilehead.png');
+
+    SetLoading(true);
     $.ajax({
         type: 'Get',
-        url: 'http://clup.alatheertech.com/Api/UpdateRegistration/' + sessionStorage.getItem("userid"),
+        url: url + 'Api/UpdateRegistration/' + sessionStorage.getItem("userid"),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
         async: true,
         data: {},
         success: function (data) {
             //ProgressIndicator.hide();
-            loadingdiv.hide();
+            SetLoading(false);
             if (data) {
                 prusernametb.val(data.user_name);
                 premailtb.val(data.email);
@@ -673,7 +757,7 @@ userprofiletablnk.click(function () {
             premailtb.val('');
             prphonetb.val('');
             var err = a.responseText + ' ' + e + ' ' + d;
-            alert(err);
+            navigator.notification.alert(err, null, 'خطأ', 'موافق');
         }
     });
 });
@@ -682,17 +766,17 @@ puserregisterbtn.click(function () {
     if (usrprofilestate == 'normal') {
         if (prusernametb.val()) {
             //ProgressIndicator.showSimple(true);
-            loadingdiv.show();
+            SetLoading(true);
             $.ajax({
                 type: 'POST',
-                url: 'http://clup.alatheertech.com/Api/UpdateRegistration/' + sessionStorage.getItem("userid"),
+                url: url + 'Api/UpdateRegistration/' + sessionStorage.getItem("userid"),
                 contentType: 'application/x-www-form-urlencoded; charset=utf-8',
                 dataType: 'json',
                 async: true,
                 data: { 'user_name': prusernametb.val(), 'email': premailtb.val(), 'mobile': prphonetb.val() },
                 success: function (data) {
                     //ProgressIndicator.hide();
-                    loadingdiv.hide();
+                    SetLoading(false);
                     if (data.success == 1) {
                         navigator.notification.alert('تم حفظ بياناتك بنجاح', null, 'تم', 'موافق');
                     } else {
@@ -700,9 +784,9 @@ puserregisterbtn.click(function () {
                     }
                 }, error: function (a, e, d) {
                     //ProgressIndicator.hide();
-                    loadingdiv.hide();
+                    SetLoading(false);
                     var err = a.responseText + ' ' + e + ' ' + d;
-                    alert(err);
+                    navigator.notification.alert(err, null, 'خطأ', 'موافق');
                 }
             });
 
@@ -713,17 +797,17 @@ puserregisterbtn.click(function () {
     } else if (usrprofilestate == 'password') {
         if (prusernametb.val()) {
             //ProgressIndicator.showSimple(true);
-            loadingdiv.show();
+            SetLoading(true);
             $.ajax({
                 type: 'POST',
-                url: 'http://clup.alatheertech.com/Api/UpdatePassWord',
+                url: url + 'Api/UpdatePassWord',
                 contentType: 'application/x-www-form-urlencoded; charset=utf-8',
                 dataType: 'json',
                 async: true,
                 data: { 'id': sessionStorage.getItem("userid"), 'password': prpasswordtb.val() },
                 success: function (data) {
                     //ProgressIndicator.hide();
-                    loadingdiv.hide();
+                    SetLoading(false);
                     if (data.success == 1) {
                         $('.passwordlbl').hide();
                         $('.userdata').show();
@@ -735,9 +819,9 @@ puserregisterbtn.click(function () {
                     }
                 }, error: function (a, e, d) {
                     //ProgressIndicator.hide();
-                    loadingdiv.hide();
+                    SetLoading(false);
                     var err = a.responseText + ' ' + e + ' ' + d;
-                    alert(err);
+                    navigator.notification.alert(err, null, 'خطأ', 'موافق');
                 }
             });
 
@@ -765,23 +849,24 @@ changepasswordlnk.click(function () {
     return false;
 });
 manadeebofferstablnk.click(function () {
+
     showManadeebOffers();
-
-
+    searchpgbox.hide();
+    titleimgcen.attr('src', 'img/incommingorders.png');
 });
 
 function showManadeebOffers() {
-    loadingdiv.show();
+    SetLoading(true);
     $.ajax({
         type: 'Get',
-        url: 'http://clup.alatheertech.com/Api/ClientDelegatesOrders/' + sessionStorage.getItem("userid"),
+        url: url + 'Api/ClientDelegatesOrders/' + sessionStorage.getItem("userid"),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
         async: true,
         data: {},
         success: function (data) {
             //ProgressIndicator.hide();
-            loadingdiv.hide();
+            SetLoading(false);
             if (data) {
                 var ht = '';
                 for (var i = 0; i < data.length; i++) {
@@ -798,25 +883,25 @@ function showManadeebOffers() {
             }
         }, error: function (a, e, d) {
             //ProgressIndicator.hide();
-            loadingdiv.hide();
+            SetLoading(false);
             var err = a.responseText + ' ' + e + ' ' + d;
-            alert(err);
+            navigator.notification.alert(err, null, 'خطأ', 'موافق');
         }
     });
 }
 
 function SelectMandoobOffer(delegates_id_fk, reservation_id_fk, order_id) {
-    loadingdiv.show();
+    SetLoading(true);
     $.ajax({
         type: 'POST',
-        url: 'http://clup.alatheertech.com/Api/SelectDelegates',
+        url: url + 'Api/SelectDelegates',
         contentType: 'application/x-www-form-urlencoded; charset=utf-8',
         dataType: 'json',
         async: true,
         data: { 'delegates_id_fk': delegates_id_fk, 'reservation_id_fk': reservation_id_fk, 'order_id': order_id },
         success: function (data) {
             //ProgressIndicator.hide();
-            loadingdiv.hide();
+            SetLoading(false);
             if (data.success == 1) {
                 navigator.notification.alert('تم اختيار المندوب بنجاح', null, 'تم', 'موافق');
                 showManadeebOffers();
@@ -825,9 +910,384 @@ function SelectMandoobOffer(delegates_id_fk, reservation_id_fk, order_id) {
             }
         }, error: function (a, e, d) {
             //ProgressIndicator.hide();
-            loadingdiv.hide();
+            SetLoading(false);
             var err = a.responseText + ' ' + e + ' ' + d;
-            alert(err);
+            navigator.notification.alert(err, null, 'خطأ', 'موافق');
         }
     });
 }
+
+
+function SetLoading(isLoading) {
+    if (isLoading == true) {
+        loadingdiv.modal('show');
+    } else {
+        setTimeout(function () {
+            loadingdiv.modal('hide');
+        }, 400);
+    }
+}
+
+cancelbemandoob.click(function () {
+    bemandoobDiv.hide();
+    $('.addactionbtns').show();
+
+    return false;
+});
+
+bemandoob.click(function () {
+    joinreasontb.val('');
+    personalimghdn.val('');
+    personalimg.attr('src', 'img/chooseimg.png');
+    licenseimghdn.val('');
+    licenseimg.attr('src', 'img/chooseimg.png');
+    bemandoobDiv.show();
+    $('.addactionbtns').hide();
+});
+
+addplayground.click(function () {
+    addPlaygrounddiv.show();
+    $('.addactionbtns').hide();
+    pgnametb.val('');
+    pgpricetb.val('');
+    pgaddressta.val('');
+    pgphonetb.val('');
+    pgcapacityselect.val(1);
+    pgaddimgspreviewdiv.html('');
+
+});
+var stle = {
+    opacity: 0.75, // 0.0 (transparent) to 1.0 (opaque). Default 0.8
+    backgroundColor: '#FF0000', // make sure you use #RRGGBB. Default #333333
+    textColor: '#FFFF00', // Ditto. Default #FFFFFF
+    textSize: 20.5, // Default is approx. 13.
+    cornerRadius: 16, // minimum is 0 (square). iOS default 20, Android default 100
+    horizontalPadding: 20, // iOS default 16, Android default 50
+    verticalPadding: 16 // iOS default 12, Android default 30
+};
+bemandoobbtn.click(function () {
+    if (personalimghdn.val()) { } else {
+        window.plugins.toast.show({
+            message: 'من فضلك اختار الصورة الشخصية',
+            duration: "short", // 2000 ms
+            position: "bottom",
+            styling: stle
+        }, function (b) { });
+        return;
+    }
+    if (licenseimghdn.val()) { } else {
+        window.plugins.toast.show({
+            message: 'من فضلك اختار الصورة الرخصة',
+            duration: "short", // 2000 ms
+            position: "bottom",
+            styling: stle
+        }, function (b) { });
+        return;
+    }
+    if (joinreasontb.val()) {
+        SetLoading(true);
+        $.ajax({
+            type: 'POST',
+            url: url + 'Api/OrdersBeDelegate',
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            dataType: 'json',
+            async: true,
+            data: { 'user_id_fk': sessionStorage.getItem("userid"), 'person_image': personalimghdn.val(), 'person_license': licenseimghdn.val(), 'person_reson': joinreasontb.val() },
+            success: function (data) {
+                //ProgressIndicator.hide();
+                SetLoading(false);
+                if (data.success == 1) {
+                    navigator.notification.alert('تم ارسال طلبك بنجاح', null, 'تم', 'موافق');
+                    cancelbemandoob.click();
+                } else {
+                    navigator.notification.alert('عذرا ولكن حدث خطأ أثناء تنفيذ طلبك!', null, 'خطأ', 'موافق');
+                }
+            }, error: function (a, e, d) {
+                //ProgressIndicator.hide();
+                SetLoading(false);
+                var err = a.responseText + ' ' + e + ' ' + d;
+                navigator.notification.alert(err, null, 'خطأ', 'موافق');
+            }
+        });
+    } else {
+        window.plugins.toast.show({
+            message: 'من فضلك أدخل سبب الانضمام',
+            duration: "short", // 2000 ms
+            position: "bottom",
+            styling: stle
+        }, function (b) { });
+    }
+});
+
+changepersonalimglnk.click(function () {
+    navigator.camera.getPicture(GetPersonalImgData, function (message) {
+        navigator.notification.alert('خطأ في اختيار الصورة', null, 'خطأ', 'موافق');
+    }, {
+        quality: 100,
+        destinationType: navigator.camera.DestinationType.FILE_URI,
+        sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY
+    });
+    return false;
+});
+function GetPersonalImgData(imageURI) {
+    getFileContentAsBase64(imageURI, function (base64Image) {
+        //window.open(base64Image);
+        personalimghdn.val(base64Image);
+        // Then you'll be able to handle the myimage.png file as base64
+        personalimg.attr('src', base64Image);
+    });
+}
+changelicenseimglnk.click(function () {
+    navigator.camera.getPicture(GetLicenseImgData, function (message) {
+        navigator.notification.alert('خطأ في اختيار الصورة', null, 'خطأ', 'موافق');
+    }, {
+        quality: 100,
+        destinationType: navigator.camera.DestinationType.FILE_URI,
+        sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY
+    });
+    return false;
+});
+
+canceladdpg.click(function () {
+    addPlaygrounddiv.hide();
+    $('.addactionbtns').show();
+
+    return false;
+});
+
+function GetLicenseImgData(imageURI) {
+    getFileContentAsBase64(imageURI, function (base64Image) {
+        //window.open(base64Image);
+        licenseimghdn.val(base64Image);
+        // Then you'll be able to handle the myimage.png file as base64
+        licenseimg.attr('src', base64Image);
+    });
+}
+
+
+function getFileContentAsBase64(path, callback) {
+    window.resolveLocalFileSystemURL(path, gotFile, fail);
+
+    function fail(e) {
+        navigator.notification.alert('لم نستطع ايجاد الملف المطلوب', null, 'خطأ', 'موافق');
+    }
+
+    function gotFile(fileEntry) {
+        fileEntry.file(function (file) {
+            var reader = new FileReader();
+            reader.onloadend = function (e) {
+                var content = this.result;
+                callback(content);
+            };
+            // The most important point, use the readAsDatURL Method from the file plugin
+            reader.readAsDataURL(file);
+        });
+    }
+}
+addPlaygroundbtn.click(function () {
+    if (pgnametb.val()) { } else {
+        window.plugins.toast.show({
+            message: 'من فضلك أدخل اسم الملعب',
+            duration: "short", // 2000 ms
+            position: "bottom",
+            styling: stle
+        }, function (b) { });
+        return;
+    }
+    if (pgpricetb.val()) { } else {
+        window.plugins.toast.show({
+            message: 'من فضلك أدخل السعر',
+            duration: "short", // 2000 ms
+            position: "bottom",
+            styling: stle
+        }, function (b) { });
+        return;
+    }
+    if (pgcapacityselect.val()) { } else {
+        window.plugins.toast.show({
+            message: 'من فضلك اختر سعة الملعب',
+            duration: "short", // 2000 ms
+            position: "bottom",
+            styling: stle
+        }, function (b) { });
+        return;
+    }
+    if (pgaddressta.val()) { } else {
+        window.plugins.toast.show({
+            message: 'من فضلك أدخل العنوان',
+            duration: "short", // 2000 ms
+            position: "bottom",
+            styling: stle
+        }, function (b) { });
+        return;
+    }
+    if (playground_google_lathdn.val() && playground_google_lnghdn.val()) { } else {
+        window.plugins.toast.show({
+            message: 'من فضلك حدد موقع الملعب',
+            duration: "short", // 2000 ms
+            position: "bottom",
+            styling: stle
+        }, function (b) { });
+        return;
+    }
+
+    var imgarr = [];
+    if (pgaddimghdn1.val()) {
+        imgarr.push(pgaddimghdn1.val());
+    }
+    if (pgaddimghdn2.val()) {
+        imgarr.push(pgaddimghdn2.val());
+    }
+    if (pgaddimghdn3.val()) {
+        imgarr.push(pgaddimghdn3.val());
+    }
+    if (pgaddimghdn4.val()) {
+        imgarr.push(pgaddimghdn4.val());
+    }
+    if (pgaddimghdn5.val()) {
+        imgarr.push(pgaddimghdn5.val());
+    }
+
+    if (imgarr.length >= 2) {
+        SetLoading(true);
+        $.ajax({
+            type: 'POST',
+            url: url + 'Api/AddNewPlayground',
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            dataType: 'json',
+            async: true,
+            data: { 'user_id_fk': sessionStorage.getItem("userid"), 'playground_name': pgnametb.val(), 'playground_cost': pgpricetb.val(), 'playground_capacity': pgcapacityselect.val(), 'playground_address': pgaddressta.val(), 'playground_phone': pgphonetb.val(), 'playground_images': imgarr, 'playground_google_lat': playground_google_lathdn.val(), 'playground_google_lng': playground_google_lnghdn.val() },
+            success: function (data) {
+                //ProgressIndicator.hide();
+                SetLoading(false);
+                if (data.success == 1) {
+                    navigator.notification.alert('تم اضافة الملعب بنجاح', null, 'تم', 'موافق');
+                    canceladdpg.click();
+                } else {
+                    navigator.notification.alert('عذرا ولكن حدث خطأ أثناء تنفيذ طلبك!', null, 'خطأ', 'موافق');
+                }
+            }, error: function (a, e, d) {
+                //ProgressIndicator.hide();
+                SetLoading(false);
+                var err = a.responseText + ' ' + e + ' ' + d;
+                navigator.notification.alert(err, null, 'خطأ', 'موافق');
+            }
+        });
+    } else {
+        window.plugins.toast.show({
+            message: 'لابد من اختيار صورتين على الاقل',
+            duration: "short", // 2000 ms
+            position: "bottom",
+            styling: stle
+        }, function (b) { });
+    }
+
+});
+
+choosepgaddimglnk.click(function () {
+    if (pgaddimgspreviewdiv.find('img').length == 5) {
+        window.plugins.toast.show({
+            message: 'أقصى عدد للصور هو 5 صور',
+            duration: "short", // 2000 ms
+            position: "bottom",
+            styling: stle
+        }, function (b) { });
+    }
+
+    navigator.camera.getPicture(GetPGImgData, function (message) {
+        navigator.notification.alert('خطأ في اختيار الصورة', null, 'خطأ', 'موافق');
+    }, {
+        quality: 100,
+        destinationType: navigator.camera.DestinationType.FILE_URI,
+        sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY
+    });
+    return false;
+});
+function GetPGImgData(imageURI) {
+    getFileContentAsBase64(imageURI, function (base64Image) {
+        //window.open(base64Image);
+        if (pgaddimghdn1.val()){
+            if (pgaddimghdn2.val()) {
+                if (pgaddimghdn3.val()) {
+                    if (pgaddimghdn4.val()) {
+                        if (pgaddimghdn5.val()) {
+
+                        } else {
+                            pgaddimghdn5.val(base64Image);
+                            pgaddimgspreviewdiv.append('<div><img src="' + base64Image + '" width="120" /><a href="#" class="txtwhite" onclick="return DeletePgImage(this, 5)">حذف الصورة</a></div>');
+                        }
+                    } else {
+                        pgaddimghdn4.val(base64Image);
+                        pgaddimgspreviewdiv.append('<div><img src="' + base64Image + '" width="120" /><a href="#" class="txtwhite" onclick="return DeletePgImage(this, 4)">حذف الصورة</a></div>');
+                    }
+                } else {
+                    pgaddimghdn3.val(base64Image);
+                    pgaddimgspreviewdiv.append('<div><img src="' + base64Image + '" width="120" /><a href="#" class="txtwhite" onclick="return DeletePgImage(this, 3)">حذف الصورة</a></div>');
+                }
+            } else {
+                pgaddimghdn2.val(base64Image);
+                pgaddimgspreviewdiv.append('<div><img src="' + base64Image + '" width="120" /><a href="#" class="txtwhite" onclick="return DeletePgImage(this, 2)">حذف الصورة</a></div>');
+            }
+        } else {
+            pgaddimghdn1.val(base64Image);
+            pgaddimgspreviewdiv.append('<div><img src="' + base64Image + '" width="120" /><a href="#" class="txtwhite" onclick="return DeletePgImage(this, 1)">حذف الصورة</a></div>');
+        }
+        // Then you'll be able to handle the myimage.png file as base64
+        
+    });
+}
+
+function DeletePgImage(a,indx) {
+    switch (indx) {
+        case 1:
+            pgaddimghdn1.val('');
+            break;
+        case 2:
+            pgaddimghdn2.val('');
+            break;
+        case 3:
+            pgaddimghdn3.val('');
+            break;
+        case 4:
+            pgaddimghdn4.val('');
+            break;
+        case 5:
+            pgaddimghdn5.val('');
+            break;
+        default:
+            break;
+            $(a).parent().remove();
+    }
+    return false;
+}
+
+function initLocationPicker() {
+    $('#us3').locationpicker({
+        location: {
+            latitude: lat,
+            longitude: lng
+        },
+        radius: 10,
+        inputBinding: {
+            latitudeInput: playground_google_lathdn,
+            longitudeInput: playground_google_lnghdn
+        },
+        enableAutocomplete: true,
+        markerIcon: 'img/map-marker-2-xl.png'
+    });
+    $('#us6-dialog').on('shown.bs.modal', function () {
+        $('#us3').locationpicker('autosize');
+    });
+}
+
+$(document).ready(function () {
+
+    $('#searchpgtxt').typeWatch({
+        wait: 2000,
+        captureLength: 1,
+        callback: function (value) {
+            ShowPlaygrounds(value);
+        }
+    });
+    initLocationPicker();
+});

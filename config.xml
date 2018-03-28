@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.atheertech.marma" version="1.0.25" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+<widget id="com.alatheertech.marma" version="1.0.25" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>MarmaApp</name>
     <description>
         Application to make playgrounds reservations.
@@ -30,7 +30,9 @@
     <plugin name="cordova-plugin-console" source="npm" spec="~1.0.3" />
     <plugin name="cordova-plugin-dialogs" source="npm" spec="~1.2.1" />
     <plugin name="cordova-plugin-whitelist" source="npm" spec="~1.2.1" />
-    <plugin name="phonegap-plugin-push" spec="^2.1.1" />
+    <plugin name="phonegap-plugin-push" spec="^2.1.1">
+        <variable name="FCM_VERSION" value="11.0.1" />
+    </plugin>
     <icon height="1024" src="icon.jpg" width="1024" />
     <icon height="1024" src="icon.png" width="1024" />
     <splash src="resources/screen.png" />
@@ -86,12 +88,12 @@
         <splash height="960" platform="ios" src="www/res/screen/ios/Default@2x~iphone.png" width="640" />
         <splash height="480" platform="ios" src="www/res/screen/ios/Default~iphone.png" width="320" />
     </platform>
-	<platform name="android">
-  <resource-file src="google-services.json" target="google-services.json" />
-</platform>
-<platform name="ios">
-  <resource-file src="GoogleService-Info.plist" />
-</platform>
+    <platform name="android">
+        <resource-file src="google-services.json" target="google-services.json" />
+    </platform>
+    <platform name="ios">
+        <resource-file src="GoogleService-Info.plist" />
+    </platform>
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -106,4 +108,9 @@
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
+    <edit-config file="*-Info.plist" mode="merge" target="NSPhotoLibraryUsageDescription">
+        <string>need photo library access to get pictures from there</string>
+    </edit-config>
+    <engine name="android" spec="~7.0.0" />
+    <engine name="ios" spec="~4.5.4" />
 </widget>

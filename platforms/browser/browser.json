@@ -4,7 +4,20 @@
         "uninstalled": []
     },
     "config_munge": {
-        "files": {}
+        "files": {
+            "*-Info.plist": {
+                "parents": {
+                    "NSPhotoLibraryUsageDescription": [
+                        {
+                            "xml": "<string>need photo library access to get pictures from there</string>",
+                            "count": 1,
+                            "mode": "merge",
+                            "id": "config.xml"
+                        }
+                    ]
+                }
+            }
+        }
     },
     "installed_plugins": {
         "cordova-plugin-statusbar": {
